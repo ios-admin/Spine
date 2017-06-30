@@ -217,9 +217,6 @@ class SaveOperation: ConcurrentOperation {
 	
 	/// The result of the operation. You can safely force unwrap this in the completionBlock.
 	var result: Failable<Void, SpineError>?
-    
-    /// The result of the operation. You can safely force unwrap this in the completionBlock.
-    var result: Failable<Void, SpineError>?
 	
 	/// Whether the resource is a new resource, or an existing resource.
 	fileprivate let isNewResource: Bool
