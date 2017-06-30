@@ -109,7 +109,7 @@ class SerializeOperation: Operation {
 			
 			switch field {
 			case let toOne as ToOneRelationship:
-				if options.contains(.IncludeToOne) {
+				if options.contains(.IncludeToOne) && (resource.value(forField: field.name) as? Resource)?.id != nil {
 					addToOneRelationship(resource.value(forField: field.name) as? Resource, to: &serializedData, key: key, type: toOne.linkedType.resourceType)
 				}
 			case let toMany as ToManyRelationship:

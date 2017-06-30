@@ -240,11 +240,7 @@ class SaveOperation: ConcurrentOperation {
 	override func execute() {
 		// First update relationships if this is an existing resource. Otherwise the local relationships
 		// are overwritten with data that is returned from saving the resource.
-		if isNewResource {
-			updateResource()
-		} else {
-			updateRelationships()
-		}
+		updateResource()
 	}
 
 	fileprivate func updateResource() {
@@ -264,7 +260,7 @@ class SaveOperation: ConcurrentOperation {
 		} else {
 			url = router.urlForQuery(Query(resource: resource))
 			method = "PATCH"
-			options = [.IncludeID]
+			options = [.IncludeID, .IncludeToOne, .IncludeToMany]
 		}
         
         if omitNullValues {
