@@ -246,7 +246,7 @@ class SaveOperation: ConcurrentOperation {
 	fileprivate func updateResource() {
 		let url: URL
 		let method: String
-		let options: SerializationOptions
+		var options: SerializationOptions
 		
 		if isNewResource {
 			url = router.urlForResourceType(resource.resourceType)
