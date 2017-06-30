@@ -211,17 +211,24 @@ class DeleteOperation: ConcurrentOperation {
 class SaveOperation: ConcurrentOperation {
 	/// The resource to save.
 	let resource: Resource
+    
+    /// Will be sent null values or not
+    let omitNullValues: Bool
 	
 	/// The result of the operation. You can safely force unwrap this in the completionBlock.
 	var result: Failable<Void, SpineError>?
+    
+    /// The result of the operation. You can safely force unwrap this in the completionBlock.
+    var result: Failable<Void, SpineError>?
 	
 	/// Whether the resource is a new resource, or an existing resource.
 	fileprivate let isNewResource: Bool
 	
 	fileprivate let relationshipOperationQueue = OperationQueue()
 	
-	init(resource: Resource, spine: Spine) {
+	init(resource: Resource, spine: Spine, omitNullValues: Bool) {
 		self.resource = resource
+        self.omitNullValues = omitNullValues
 		self.isNewResource = (resource.id == nil)
 		super.init()
 		self.spine = spine
@@ -262,6 +269,10 @@ class SaveOperation: ConcurrentOperation {
 			method = "PATCH"
 			options = [.IncludeID]
 		}
+        
+        if omitNullValues {
+            options.formUnion(.OmitNullValues)
+        }
 		
 		let payload: Data
 		
