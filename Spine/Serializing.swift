@@ -54,8 +54,8 @@ public class Serializer {
 	/// - throws: SerializerError that can occur in the serialization.
 	///
 	/// - returns: Serialized data
-	public func serializeDocument(_ document: JSONAPIDocument, options: SerializationOptions = [.IncludeID]) throws -> Data {
-		let serializeOperation = SerializeOperation(document: document, valueFormatters: valueFormatters, keyFormatter: keyFormatter)
+	public func serializeDocument(_ document: JSONAPIDocument, options: SerializationOptions = [.IncludeID], extendPayload: ExtendPayloadHandler) throws -> Data {
+		let serializeOperation = SerializeOperation(document: document, valueFormatters: valueFormatters, keyFormatter: keyFormatter, extendPayload: extendPayload)
 		serializeOperation.options = options
 		
 		serializeOperation.start()
@@ -76,9 +76,9 @@ public class Serializer {
 	/// - throws: SerializerError that can occur in the serialization.
 	///
 	/// - returns: Serialized data.
-	public func serializeResources(_ resources: [Resource], options: SerializationOptions = [.IncludeID]) throws -> Data {
+	public func serializeResources(_ resources: [Resource], options: SerializationOptions = [.IncludeID], extendPayload: ExtendPayloadHandler) throws -> Data {
 		let document = JSONAPIDocument(data: resources, included: nil, errors: nil, meta: nil, links: nil, jsonapi: nil)
-		return try serializeDocument(document, options: options)
+        return try serializeDocument(document, options: options, extendPayload: extendPayload)
 	}
 
 	
