@@ -14,6 +14,7 @@ class SerializeOperation: Operation {
 	fileprivate let resources: [Resource]
 	let valueFormatters: ValueFormatterRegistry
 	let keyFormatter: KeyFormatter
+    let extendPayload: ExtendPayloadHandler
 	var options: SerializationOptions = [.IncludeID]
 	
 	var result: Failable<Data, SerializerError>?
@@ -21,8 +22,9 @@ class SerializeOperation: Operation {
 	
 	// MARK: -
 	
-	init(document: JSONAPIDocument, valueFormatters: ValueFormatterRegistry, keyFormatter: KeyFormatter) {
+	init(document: JSONAPIDocument, valueFormatters: ValueFormatterRegistry, keyFormatter: KeyFormatter, extendPayload: ExtendPayloadHandler) {
 		self.resources = document.data ?? []
+        self.extendPayload = extendPayload
 		self.valueFormatters = valueFormatters
 		self.keyFormatter = keyFormatter
 	}
@@ -39,7 +41,11 @@ class SerializeOperation: Operation {
 		}
 		
 		do {
-			let serialized = try JSONSerialization.data(withJSONObject: ["data": serializedData], options: [])
+            var payload: JSONAPIData = ["data": serializedData]
+            if let extendPayload = self.extendPayload {
+                payload = extendPayload(payload)
+            }
+			let serialized = try JSONSerialization.data(withJSONObject: payload, options: [])
 			result = Failable.success(serialized)
 		} catch let error as NSError {
 			result = Failable.failure(SerializerError.jsonSerializationError(error))

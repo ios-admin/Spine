@@ -11,6 +11,7 @@ import BrightFutures
 
 public typealias Metadata = [String: Any]
 public typealias JSONAPIData = [String: Any]
+public typealias ExtendPayloadHandler = ((_ payload: JSONAPIData) -> JSONAPIData)?
 
 /// The main class
 open class Spine {
@@ -353,9 +354,9 @@ open class Spine {
 	/// - parameter resource: The resource to save.
 	///
 	/// - returns: A future that resolves to the saved resource.
-	open func save<T: Resource>(_ resource: T, omitNullValues: Bool = false) -> Future<T, SpineError> {
+	open func save<T: Resource>(_ resource: T, omitNullValues: Bool = false, extendPayload: ExtendPayloadHandler = nil) -> Future<T, SpineError> {
 		let promise = Promise<T, SpineError>()
-        let operation = SaveOperation(resource: resource, spine: self, omitNullValues: omitNullValues)
+        let operation = SaveOperation(resource: resource, spine: self, omitNullValues: omitNullValues, extendPayload: extendPayload)
 
 		operation.completionBlock = { [unowned operation] in
 			if let error = operation.result?.error {

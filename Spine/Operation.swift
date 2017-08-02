@@ -217,15 +217,19 @@ class SaveOperation: ConcurrentOperation {
 	
 	/// The result of the operation. You can safely force unwrap this in the completionBlock.
 	var result: Failable<Void, SpineError>?
+    
+    /// Extend payload
+    let extendPayload: ExtendPayloadHandler
 	
 	/// Whether the resource is a new resource, or an existing resource.
 	fileprivate let isNewResource: Bool
 	
 	fileprivate let relationshipOperationQueue = OperationQueue()
 	
-	init(resource: Resource, spine: Spine, omitNullValues: Bool) {
+	init(resource: Resource, spine: Spine, omitNullValues: Bool, extendPayload: ExtendPayloadHandler) {
 		self.resource = resource
         self.omitNullValues = omitNullValues
+        self.extendPayload = extendPayload
 		self.isNewResource = (resource.id == nil)
 		super.init()
 		self.spine = spine
@@ -270,7 +274,7 @@ class SaveOperation: ConcurrentOperation {
 		let payload: Data
 		
 		do {
-			payload = try serializer.serializeResources([resource], options: options)
+            payload = try serializer.serializeResources([resource], options: options, extendPayload: extendPayload)
 		} catch let error {
 			result = .failure(error.asSpineError)
 			state = .finished
@@ -311,15 +315,6 @@ class SaveOperation: ConcurrentOperation {
 	}
 	
 	/// Serializes `resource` into NSData using `options`. Any error that occurs is rethrown as a SpineError.
-	fileprivate func serializePayload(_ resource: Resource, options: SerializationOptions) throws -> Data {
-		do {
-			let payload = try serializer.serializeResources([resource], options: options)
-			return payload
-		} catch let error {
-			throw error.asSpineError
-		}
-	}
-
 	fileprivate func updateRelationships() {
 		let relationships = resource.fields.filter { field in
 			return field is Relationship && !field.isReadOnly

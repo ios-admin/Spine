@@ -40,7 +40,7 @@ class SerializingTests: SerializerTests {
 	}
 	
 	func serializedJSONWithOptions(_ options: SerializationOptions) -> JSON {
-		let serializedData = try! serializer.serializeResources([foo], options: options)
+		let serializedData = try! serializer.serializeResources([foo], options: options, extendPayload: nil)
 		return JSON(data: serializedData)
 	}
 	
@@ -87,7 +87,7 @@ class SerializingTests: SerializerTests {
 	
 	func testSerializeSingleResourceWithoutToManyRelationships() {
 		let options:SerializationOptions = [.IncludeID, .IncludeToOne]
-		let serializedData = try! serializer.serializeResources([foo], options: options)
+		let serializedData = try! serializer.serializeResources([foo], options: options, extendPayload: nil)
 		let json = JSON(data: serializedData)
 		
 		XCTAssertNotNil(json["data"]["relationships"]["to-many-attribute"].error, "Expected serialized to-many to be absent.")
@@ -95,7 +95,7 @@ class SerializingTests: SerializerTests {
     
     func testSerializeResourceOmittingNulls() {
         let options: SerializationOptions = [.OmitNullValues]
-        let serializedData = try! serializer.serializeResources([foo], options: options)
+        let serializedData = try! serializer.serializeResources([foo], options: options, extendPayload: nil)
         let json = JSON(data: serializedData)
         XCTAssertNotNil(json["data"]["attributes"]["nil-attribute"].error, "Expected serialized nil to be absent.")
     }
